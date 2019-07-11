@@ -11,10 +11,20 @@
               </div>
             </v-card-title>
             <v-card-text>
-              <TodoItem v-for="(todo, index) in todos"
-                        :key="index"
-                        :todo="todo">
-              </TodoItem>
+              <draggable
+                :list="todos"
+                :disabled="!enabled"
+                class="list-group"
+                ghost-class="ghost"
+                :move="checkMove"
+                @start="dragging = true"
+                @end="dragging = false"
+              >
+                <TodoItem v-for="(todo, index) in todos"
+                          :key="index"
+                          :todo="todo">
+                </TodoItem>
+              </draggable>
               <InputField ref="inputFeild"></InputField>
             </v-card-text>
             <v-card-actions>
@@ -32,25 +42,38 @@
 <script>
 import TodoItem from './components/TodoItem'
 import InputField from './components/InputField'
+import draggable from "vuedraggable"
 
 export default {
   name: 'App',
   components: {
     TodoItem,
-    InputField
+    InputField,
+    draggable
   },
   data () {
     return {
+      enabled: true,
+      dragging: true
     }
   },
   computed: {
     todos () {
       return this.$store.state.todos
+    },
+    draggingInfo() {
+      return this.dragging ? "under drag" : "";
     }
   },
   methods: {
     addTodo () {
       this.$refs.inputFeild.addTodo()
+    },
+    replace: function() {
+      this.todos = [{ title: todo.title, id: id++ }];
+    },
+    checkMove: function(e) {
+      window.console.log("Future index: " + e.draggedContext.futureIndex);
     }
   }
 }

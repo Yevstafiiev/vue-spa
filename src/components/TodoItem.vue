@@ -1,13 +1,4 @@
 <template>
-  <draggable
-        :list="list"
-        :disabled="!enabled"
-        class="list-group"
-        ghost-class="ghost"
-        :move="checkMove"
-        @start="dragging = true"
-        @end="dragging = false"
-  >
     <v-layout sm6 align-start justify-space-between row sm10>
       <v-flex align-center xs10>
         <v-textarea :value = "title"
@@ -32,24 +23,18 @@
         </v-btn>
       </v-layout>
     </v-layout>
-  </draggable>
 </template>
 
 <script>
   import { mapActions } from 'vuex'
-  import draggable from "vuedraggable"
   
   const MIN_LENGTH_VALIDATION = 3
 
   export default {
     name: 'TodoItem',
     props: ['todo'],
-    components: {
-      draggable
-    },
     data () {
       return {
-        pageNumber: 0,
         isReadOnly: true,
         rules: {
           minLength: value => {
@@ -62,19 +47,11 @@
       todo:{
         type:Array,
         required:true
-      },
-      size:{
-        type:Number,
-        required:false,
-        default: 10
       }
     },
     computed: {
       title () {
         return this.todo.title
-      },
-      draggingInfo() {
-        return this.dragging ? "under drag" : "";
       }
     },
     methods: {
@@ -94,12 +71,6 @@
           this.editTodo({ todo: this.todo, title: newTitle })
           this.isReadOnly = true
         }
-      },
-      replace: function() {
-        this.todo = [{ title: todo.title, id: id++ }];
-      },
-      checkMove: function(e) {
-        window.console.log("Future index: " + e.draggedContext.futureIndex);
       }
     }
   }
