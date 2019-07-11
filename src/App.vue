@@ -20,7 +20,7 @@
                 @start="dragging = true"
                 @end="dragging = false"
               >
-                <TodoItem v-for="(todo, index) in todos"
+                <TodoItem v-for="(todo, index) in paginatedData"
                           :key="index"
                           :todo="todo">
                 </TodoItem>
@@ -31,6 +31,8 @@
               <v-spacer></v-spacer>
               <v-btn color="success" @click="addTodo">Save Item</v-btn>
             </v-card-actions>
+            <v-btn color="success" @click="prevPage" :disabled="pageNumber === 0">Previous</v-btn>
+            <v-btn color="success" @click="nextPage" :disabled="pageNumber > pageCount -1">Next</v-btn>
           </v-card>
         </v-flex>
       </div>
@@ -54,7 +56,15 @@ export default {
   data () {
     return {
       enabled: true,
-      dragging: true
+      dragging: true,
+      pageNumber: 0
+    }
+  },
+  props: {
+    size: {
+      type:Number,
+      required:false,
+      default: 10
     }
   },
   computed: {
@@ -63,6 +73,17 @@ export default {
     },
     draggingInfo() {
       return this.dragging ? "under drag" : "";
+    },
+    pageCount(){
+      let l = this.todos.length,
+          s = this.size;
+      return Math.floor(l/s);
+    },
+    paginatedData(){
+      const start = this.pageNumber * this.size,
+            end = start + this.size;
+      return this.todos
+               .slice(start, end);
     }
   },
   methods: {
@@ -74,6 +95,12 @@ export default {
     },
     checkMove: function(e) {
       window.console.log("Future index: " + e.draggedContext.futureIndex);
+    },
+    nextPage(){
+         this.pageNumber++;
+      },
+    prevPage(){
+      this.pageNumber--;
     }
   }
 }
@@ -91,4 +118,36 @@ export default {
 
   .korpus > input:nth-of-type(1):checked ~ div:nth-of-type(1),
   .korpus > input:nth-of-type(2):checked ~ div:nth-of-type(2) { display: block; padding: 35px; border-top: 1px solid #aaa; }
+
+  ul{
+  padding: 4px 4px;
+  border: 1px solid black;
+  
+}
+li{
+  list-style-type:none;
+  padding:4px 4px;
+}
+li:hover{
+  background-color:#eee;
+}
+li:nth-child(2n){
+  background-color:#ddd;
+}
+li:nth-child(2n):hover{
+  background-color:#ccc;
+}
+
+button{
+  width:100px;
+  height:40px;
+  background-color:#eef;
+}
+
+button:hover{
+  cursor:pointer;
+}
+button:hover:disabled{
+  cursor:not-allowed;
+}
 </style>

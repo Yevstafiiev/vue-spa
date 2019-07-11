@@ -45,7 +45,7 @@
     },
     props:{
       todo:{
-        type:Array,
+        type:Object,
         required:true
       }
     },
