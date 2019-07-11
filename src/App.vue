@@ -97,11 +97,20 @@ export default {
       window.console.log("Future index: " + e.draggedContext.futureIndex);
     },
     nextPage(){
-         this.pageNumber++;
-      },
+      this.pageNumber++;
+    },
     prevPage(){
       this.pageNumber--;
     }
+  },
+  mounted() {
+    window.addEventListener('load', () => {
+      if (!localStorage.getItem('todoKey')) {
+        for (var i = 1, arr = []; i < 100; i++) {
+          this.todos.push({ 'title': 'title ' + i })
+        }
+      }
+    })
   }
 }
 </script>
