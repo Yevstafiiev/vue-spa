@@ -4,7 +4,7 @@ We are using bellow technologies:
 * vuetify
 * vuex
 * vue draggable (drag-and-drop library)
-
+* vuejs-paginate for pagination
 ## Project setup
 Firstly, install packages:
 ```
