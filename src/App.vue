@@ -1,7 +1,9 @@
 <template>
   <v-app>
     <div class="korpus">
-      <input type="radio" name="odin" checked="checked" id="vkl1"/><label for="vkl1">1 screen</label><input type="radio" name="odin" id="vkl2"/><label for="vkl2">2 screen</label><input type="radio" name="odin" id="vkl3"/>
+      <input type="radio" name="odin" checked="checked" id="vkl1"/>
+      <label for="vkl1">1 screen</label><input type="radio" name="odin" id="vkl2"/>
+      <label for="vkl2">2 screen</label><input type="radio" name="odin" id="vkl3"/>
       <div>
         <v-flex xs12 sm6 offset-sm3>
           <v-card>
@@ -22,7 +24,8 @@
               >
                 <TodoItem v-for="(todo, index) in paginatedData"
                           :key="index"
-                          :todo="todo">
+                          :todo="todo"
+                >
                 </TodoItem>
               </draggable>
               <InputField ref="inputFeild"></InputField>
@@ -31,8 +34,16 @@
               <v-spacer></v-spacer>
               <v-btn color="success" @click="addTodo">Save Item</v-btn>
             </v-card-actions>
-            <v-btn color="success" @click="prevPage" :disabled="pageNumber === 0">Previous</v-btn>
-            <v-btn color="success" @click="nextPage" :disabled="pageNumber > pageCount -1">Next</v-btn>
+            <paginate
+              v-model="page"
+              :page-count="pageCount"
+              :click-handler="pageChangeHandler"
+              :prev-text="'Prev'"
+              :next-text="'Next'"
+              :container-class="'pagination'"
+              :page-class="'waves-effect'"
+            >
+            </paginate>
           </v-card>
         </v-flex>
       </div>
@@ -45,6 +56,7 @@
 import TodoItem from './components/TodoItem'
 import InputField from './components/InputField'
 import draggable from "vuedraggable"
+import _ from 'lodash'
 
 export default {
   name: 'App',
@@ -57,14 +69,10 @@ export default {
     return {
       enabled: true,
       dragging: true,
-      pageNumber: 0
-    }
-  },
-  props: {
-    size: {
-      type:Number,
-      required:false,
-      default: 10
+      page: 1,
+      pageSize: 10,
+      allItems: [],
+      items: []
     }
   },
   computed: {
@@ -76,14 +84,13 @@ export default {
     },
     pageCount(){
       let l = this.todos.length,
-          s = this.size;
-      return Math.floor(l/s);
+          s = this.pageSize;
+      return Math.ceil(l/s);
     },
     paginatedData(){
-      const start = this.pageNumber * this.size,
-            end = start + this.size;
-      return this.todos
-               .slice(start, end);
+      const start = (this.page - 1) * this.pageSize,
+            end = start + this.pageSize;
+      return this.todos.slice(start, end);
     }
   },
   methods: {
@@ -96,19 +103,17 @@ export default {
     checkMove: function(e) {
       window.console.log("Future index: " + e.draggedContext.futureIndex);
     },
-    nextPage(){
-      this.pageNumber++;
-    },
-    prevPage(){
-      this.pageNumber--;
+    pageChangeHandler (page) {
+      this.items = this.allItems[page - 1] || this.allItems[0]
     }
   },
   mounted() {
     window.addEventListener('load', () => {
       if (!localStorage.getItem('todoKey')) {
-        for (var i = 1, arr = []; i < 100; i++) {
+        for (var i = 1, arr = []; i < 101; i++) {
           this.todos.push({ 'title': 'title ' + i })
         }
+        window.localStorage.setItem('todoKey', JSON.stringify(this.todos))
       }
     })
   }
@@ -116,6 +121,7 @@ export default {
 </script>
 
 <style scoped>
+  @import '~materialize-css/dist/css/materialize.min.css';
   .title {
     display: flex;
     justify-content: center;
@@ -127,36 +133,4 @@ export default {
 
   .korpus > input:nth-of-type(1):checked ~ div:nth-of-type(1),
   .korpus > input:nth-of-type(2):checked ~ div:nth-of-type(2) { display: block; padding: 35px; border-top: 1px solid #aaa; }
-
-  ul{
-  padding: 4px 4px;
-  border: 1px solid black;
-  
-}
-li{
-  list-style-type:none;
-  padding:4px 4px;
-}
-li:hover{
-  background-color:#eee;
-}
-li:nth-child(2n){
-  background-color:#ddd;
-}
-li:nth-child(2n):hover{
-  background-color:#ccc;
-}
-
-button{
-  width:100px;
-  height:40px;
-  background-color:#eef;
-}
-
-button:hover{
-  cursor:pointer;
-}
-button:hover:disabled{
-  cursor:not-allowed;
-}
 </style>

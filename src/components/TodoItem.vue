@@ -3,7 +3,6 @@
       <v-flex align-center xs10>
         <v-textarea :value = "title"
                     ref = "input"
-                    v-bind:class = "[todo.done ? 'is-done' : '']"
                     @blur = "editingCompleted"
                     @keydown.enter.prevent = "editingCompleted"
                     @dblclick= "edit"
